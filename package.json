@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node src/server/index.js",
-    "test": "jest --testPathPattern=tests/ --forceExit"
+    "test": "jest --testPathPatterns=tests/ --forceExit"
   },
   "jest": {
     "testEnvironment": "node"
