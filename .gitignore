@@ -20,6 +20,8 @@ venv/
 .venv/
 
 # Node
+config.json
+data/
 node_modules/
 dist/
 .env.local

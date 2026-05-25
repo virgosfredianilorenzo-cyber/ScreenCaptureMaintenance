@@ -1,0 +1,16 @@
+{
+  "port": 3000,
+  "dataDir": "./data",
+  "capture": {
+    "intervalMs": 2000
+  },
+  "ai": {
+    "enabled": false,
+    "apiKey": "",
+    "model": "claude-sonnet-4-6",
+    "maxAttemptsPerStep": 3
+  },
+  "export": {
+    "defaultPassingScore": 70
+  }
+}
