@@ -11,6 +11,8 @@ Outil e-learning auteur permettant à un formateur de capturer un parcours appli
 
 Contrainte centrale : quand l'interface du logiciel capturé change, le formateur doit pouvoir mettre à jour uniquement les étapes affectées sans refaire tout le parcours, et conserver un historique de versions.
 
+Des fonctionnalités IA (Claude API, vision + texte) sont intégrées de façon **optionnelle** pour assister le formateur — chaque suggestion est accepter / modifier / rejeter. Elles ne bloquent pas l'usage sans clé API.
+
 ---
 
 ## 2. Architecture globale
@@ -39,6 +41,7 @@ Contrainte centrale : quand l'interface du logiciel capturé change, le formateu
 - **Stockage :** fichiers JSON + PNG sur filesystem local
 - **Player :** bundle HTML/JS/CSS autonome, injecté dans le package au moment de l'export
 - **Architecture fichiers :** non-monolithique — chaque responsabilité dans son propre fichier
+- **IA (optionnelle) :** Claude API (claude-sonnet-4-6), activée si une clé API est fournie dans la config
 
 ---
 
@@ -172,6 +175,23 @@ data/
 4. **Remplacement d'étape** : nouvelle capture → glisser sur l'étape existante → hotspots/annotations conservés par défaut
 5. **Versioning** : `Créer une version` → clone la version courante → travail sur la nouvelle sans perdre l'ancienne
 
+### Assistance IA (optionnelle)
+
+Toutes les fonctions IA affichent leurs suggestions avec le badge `✦ IA` et proposent trois actions : **Accepter**, **Modifier**, **Rejeter**. Elles sont désactivées silencieusement si aucune clé API n'est configurée.
+
+| Fonction | Déclencheur | Ce que fait l'IA |
+|---|---|---|
+| **Détection de hotspots** | Bouton `✦ Détecter les zones` dans l'éditeur | Analyse le screenshot (vision), propose les zones cliquables détectées (boutons, champs, liens) |
+| **Génération d'instruction** | Bouton `✦ Rédiger` à côté du champ instruction | Génère le texte d'instruction + feedbacks OK/KO à partir du screenshot et du titre de l'étape |
+| **Titre automatique** | À l'ajout d'une étape en timeline | Propose un titre court décrivant l'action visible dans le screenshot |
+| **Auto-tagging** | Bouton `✦ Suggérer des tags` dans les métadonnées du parcours | Analyse les screenshots du parcours et propose des tags pertinents |
+| **Résumé du parcours** | Bouton `✦ Générer une description` | Rédige une description synthétique du parcours pour le champ LMS |
+| **Détection de changements** | Lors du remplacement d'une étape (nouveau screenshot) | Compare ancien et nouveau screenshot, signale les éléments déplacés ou modifiés, indique les hotspots à réviser |
+
+**Configuration de la clé API** : saisie dans les paramètres de l'application (`config.json` local, jamais exposé au player ou au package exporté).
+
+**Modèle utilisé :** `claude-sonnet-4-6` avec prompt caching sur les screenshots répétés pour limiter les coûts.
+
 ### Structure de fichiers (serveur)
 
 ```
@@ -188,6 +208,7 @@ src/server/
     parcoursService.js      ← versioning, CRUD parcours
     stepService.js          ← CRUD étapes individuelles
     fileService.js          ← lecture/écriture JSON + PNG
+    aiService.js            ← appels Claude API (vision + texte)
     exportService.js        ← orchestration export
     scormBuilder.js         ← génération imsmanifest.xml + zip
     xapiBuilder.js          ← génération tincan.xml + zip
@@ -205,6 +226,7 @@ src/client/
     editor.js               ← Canvas Fabric.js
     timeline.js
     api.js                  ← appels fetch
+    aiPanel.js              ← composant UI suggestions IA (badge, accepter/modifier/rejeter)
   css/
     main.css
     editor.css
@@ -336,4 +358,32 @@ Identique avec `tincan.xml` à la place de `imsmanifest.xml`.
 | SCORM 1.2 runtime | pipwerks SCORM API Wrapper |
 | xAPI runtime | ADL xAPI JS Library |
 | Stockage | Filesystem local (JSON + PNG) |
+| IA (optionnelle) | Claude API — `claude-sonnet-4-6` avec prompt caching |
 | OS supportés | Linux, macOS, Windows |
+
+---
+
+## 9. Configuration
+
+Fichier `config.json` local (non versionné, dans `.gitignore`) :
+
+```json
+{
+  "port": 3000,
+  "dataDir": "./data",
+  "capture": {
+    "intervalMs": 2000
+  },
+  "ai": {
+    "enabled": false,
+    "apiKey": "",
+    "model": "claude-sonnet-4-6",
+    "maxAttemptsPerStep": 3
+  },
+  "export": {
+    "defaultPassingScore": 70
+  }
+}
+```
+
+La clé API n'est jamais incluse dans les packages exportés.
