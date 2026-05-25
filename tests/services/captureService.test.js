@@ -3,7 +3,7 @@ const os = require('os');
 const fs = require('fs').promises;
 
 jest.mock('screenshot-desktop', () => jest.fn().mockResolvedValue(Buffer.from([0x89, 0x50])));
-jest.mock('uuid', () => ({ v4: () => 'test-uuid-1234' }));
+jest.mock('crypto', () => ({ randomUUID: () => 'test-uuid-1234' }));
 
 let tmpDir;
 let captureService;
@@ -12,7 +12,7 @@ beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'scm-cap-'));
   jest.resetModules();
   jest.mock('screenshot-desktop', () => jest.fn().mockResolvedValue(Buffer.from([0x89, 0x50])));
-  jest.mock('uuid', () => ({ v4: () => 'test-uuid-1234' }));
+  jest.mock('crypto', () => ({ randomUUID: () => 'test-uuid-1234' }));
   captureService = require('../../src/server/services/captureService');
 });
 

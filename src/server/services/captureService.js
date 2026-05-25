@@ -1,12 +1,12 @@
 const screenshot = require('screenshot-desktop');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const { savePng, readJson, writeJson } = require('./fileService');
 
 let autoInterval = null;
 
 async function captureOne(dataDir) {
-  const id = uuidv4();
+  const id = randomUUID();
   const imgBuffer = await screenshot({ format: 'png' });
   const imgPath = path.join(dataDir, 'gallery', `${id}.png`);
   await savePng(imgPath, imgBuffer);
@@ -27,8 +27,12 @@ async function captureOne(dataDir) {
 function startAutoCapture(dataDir, intervalMs, onCapture) {
   if (autoInterval) return;
   autoInterval = setInterval(async () => {
-    const entry = await captureOne(dataDir);
-    if (onCapture) onCapture(entry);
+    try {
+      const entry = await captureOne(dataDir);
+      if (onCapture) onCapture(entry);
+    } catch (err) {
+      console.error('[captureService] auto-capture error:', err.message);
+    }
   }, intervalMs);
 }
 
