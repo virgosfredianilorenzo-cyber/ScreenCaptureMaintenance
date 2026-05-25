@@ -85,7 +85,17 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
 npm test
 ```
 
-19 tests unitaires et d'intégration (Jest + Supertest).
+20 tests unitaires et d'intégration (Jest + Supertest).
+
+## Sécurité
+
+Audit Plan 1 effectué (2026-05-25) — aucune CVE dans les dépendances (`npm audit`).
+
+Corrections appliquées :
+- **XSS** : remplacement de `innerHTML` par des API DOM dans la galerie client
+- **Path traversal** : validation que `entry.filename === <uuid>.png` avant suppression de fichier
+- **Validation d'entrée** : format UUID vérifié sur `DELETE /api/gallery/:id` (→ 400 si invalide)
+- **Dépendance morte** : paquet `uuid` supprimé (remplacé par `crypto.randomUUID`)
 
 ## Structure du projet
 

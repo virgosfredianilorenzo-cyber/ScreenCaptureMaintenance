@@ -14,16 +14,30 @@ const Gallery = {
       const item = document.createElement('div');
       item.className = 'gallery-item';
       item.dataset.id = entry.id;
-      item.innerHTML = `
-        <img src="/data/gallery/${entry.filename}" alt="${entry.id}" />
-        <span class="gallery-date">${new Date(entry.createdAt).toLocaleTimeString()}</span>
-        <button class="btn-delete" data-id="${entry.id}">✕</button>
-      `;
-      item.querySelector('.btn-delete').addEventListener('click', async (e) => {
+
+      const img = document.createElement('img');
+      img.src = `/data/gallery/${encodeURIComponent(entry.filename)}`;
+      img.alt = entry.id;
+
+      const date = document.createElement('span');
+      date.className = 'gallery-date';
+      date.textContent = new Date(entry.createdAt).toLocaleTimeString();
+
+      const btn = document.createElement('button');
+      btn.className = 'btn-delete';
+      btn.dataset.id = entry.id;
+      btn.textContent = '✕';
+
+      item.appendChild(img);
+      item.appendChild(date);
+      item.appendChild(btn);
+
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         await API.deleteCapture(entry.id);
         await this.refresh();
       });
+
       this.container.appendChild(item);
     });
   },
