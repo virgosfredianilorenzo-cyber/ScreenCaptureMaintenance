@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScreenCaptureMaintenance — Auteur</title>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <div id="toolbar">
+    <h1>ScreenCaptureMaintenance</h1>
+    <button id="btn-capture" class="btn-primary">● Capturer</button>
+    <button id="btn-stop" class="btn-danger" disabled>■ Stop</button>
+    <span id="capture-status"></span>
+  </div>
+
+  <div id="gallery-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/toolbar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Gallery.init(document.getElementById('gallery-container'));
+      Toolbar.init();
+    });
+  </script>
+
+</body>
+</html>
