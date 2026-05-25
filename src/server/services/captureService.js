@@ -1,13 +1,40 @@
 const screenshot = require('screenshot-desktop');
+const { execFile } = require('child_process');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { savePng, readJson, writeJson } = require('./fileService');
 
 let autoInterval = null;
 
+// Linux fallback via Python PIL when scrot/ImageMagick are unavailable
+function captureLinuxFallback() {
+  const script = path.join(__dirname, '../lib/capture-linux.py');
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    const proc = execFile('python3', [script], { encoding: 'buffer', maxBuffer: 50 * 1024 * 1024 });
+    proc.stdout.on('data', chunk => chunks.push(chunk));
+    proc.on('close', code => {
+      if (code === 0) resolve(Buffer.concat(chunks));
+      else reject(new Error(`Python capture exited with code ${code}`));
+    });
+    proc.on('error', reject);
+  });
+}
+
+async function takeScreenshot() {
+  if (process.platform !== 'linux') {
+    return screenshot({ format: 'png' });
+  }
+  try {
+    return await screenshot({ format: 'png', linuxLibrary: 'scrot' });
+  } catch {
+    return captureLinuxFallback();
+  }
+}
+
 async function captureOne(dataDir) {
   const id = randomUUID();
-  const imgBuffer = await screenshot({ format: 'png' });
+  const imgBuffer = await takeScreenshot();
   const imgPath = path.join(dataDir, 'gallery', `${id}.png`);
   await savePng(imgPath, imgBuffer);
 
