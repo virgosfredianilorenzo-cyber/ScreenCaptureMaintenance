@@ -25,11 +25,9 @@ async function takeScreenshot() {
   if (process.platform !== 'linux') {
     return screenshot({ format: 'png' });
   }
-  try {
-    return await screenshot({ format: 'png', linuxLibrary: 'scrot' });
-  } catch {
-    return captureLinuxFallback();
-  }
+  // screenshot-desktop calls xrandr synchronously on Linux, crashing the process
+  // when xrandr is absent — go straight to the Python/PIL fallback instead.
+  return captureLinuxFallback();
 }
 
 async function captureOne(dataDir) {

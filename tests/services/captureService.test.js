@@ -2,7 +2,27 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs').promises;
 
+const mockPng = Buffer.from([0x89, 0x50]);
+
+// Mock screenshot-desktop (macOS/Windows path)
 jest.mock('screenshot-desktop', () => jest.fn().mockResolvedValue(Buffer.from([0x89, 0x50])));
+
+// Mock child_process.execFile (Linux Python fallback path)
+jest.mock('child_process', () => {
+  const { EventEmitter } = require('events');
+  return {
+    execFile: jest.fn((_cmd, _args, _opts) => {
+      const proc = new EventEmitter();
+      proc.stdout = new EventEmitter();
+      process.nextTick(() => {
+        proc.stdout.emit('data', Buffer.from([0x89, 0x50]));
+        proc.emit('close', 0);
+      });
+      return proc;
+    }),
+  };
+});
+
 jest.mock('crypto', () => ({ randomUUID: () => 'test-uuid-1234' }));
 
 let tmpDir;
@@ -12,6 +32,20 @@ beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'scm-cap-'));
   jest.resetModules();
   jest.mock('screenshot-desktop', () => jest.fn().mockResolvedValue(Buffer.from([0x89, 0x50])));
+  jest.mock('child_process', () => {
+    const { EventEmitter } = require('events');
+    return {
+      execFile: jest.fn((_cmd, _args, _opts) => {
+        const proc = new EventEmitter();
+        proc.stdout = new EventEmitter();
+        process.nextTick(() => {
+          proc.stdout.emit('data', Buffer.from([0x89, 0x50]));
+          proc.emit('close', 0);
+        });
+        return proc;
+      }),
+    };
+  });
   jest.mock('crypto', () => ({ randomUUID: () => 'test-uuid-1234' }));
   captureService = require('../../src/server/services/captureService');
 });

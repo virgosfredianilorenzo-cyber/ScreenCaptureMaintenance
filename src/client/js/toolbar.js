@@ -22,11 +22,14 @@ const Toolbar = {
   },
 
   async _stop() {
-    await API.stopCapture();
-    this.btnCapture.disabled = false;
-    this.btnStop.disabled = true;
-    this.statusEl.textContent = '';
-    clearInterval(this._pollInterval);
+    try {
+      await API.stopCapture();
+    } finally {
+      this.btnCapture.disabled = false;
+      this.btnStop.disabled = true;
+      this.statusEl.textContent = '';
+      clearInterval(this._pollInterval);
+    }
     await Gallery.refresh();
   },
 
