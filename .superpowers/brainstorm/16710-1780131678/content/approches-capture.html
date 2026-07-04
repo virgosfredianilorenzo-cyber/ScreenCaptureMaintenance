@@ -1,0 +1,73 @@
+<h2>3 approches — Capture enrichie (screenshots + événements)</h2>
+<p class="subtitle">Comment synchroniser les screenshots avec le flux d'événements ?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Intervalle rapide + stream d'événements</h3>
+      <p>Screenshots toutes les <strong>300–500 ms</strong> (configurable). Événements capturés en continu dans un stream séparé. Association par timestamp dans l'éditeur.</p>
+      <div class="pros-cons" style="margin-top:10px;font-size:12px">
+        <div class="pros"><h4>Pour</h4><ul>
+          <li>Proche de l'existant</li>
+          <li>Capture exhaustive</li>
+          <li>Formateur ne change pas ses habitudes</li>
+        </ul></div>
+        <div class="cons"><h4>Contre</h4><ul>
+          <li>Beaucoup de screenshots redondants</li>
+          <li>Éditeur doit sélectionner les "clés"</li>
+          <li>Stockage important</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Screenshot déclenché par événement ⭐ Recommandé</h3>
+      <p>Un screenshot est pris <strong>automatiquement à chaque événement significatif</strong> : clic souris, changement de fenêtre, raccourci manuel. Les événements <em>entre</em> screenshot[N] et screenshot[N+1] = séquence à reproduire pour l'étape N.</p>
+      <div style="background:#1e1e2e;border-radius:6px;padding:10px;margin:8px 0;font-family:monospace;font-size:11px;color:#cdd6f4">
+        <span style="color:#a6e3a1">clic → 📸 step 1</span> &nbsp;
+        <span style="color:#cba6f7">drag+drop → 📸 step 2</span> &nbsp;
+        <span style="color:#f9e2af">frappe → 📸 step 3</span>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;font-size:12px">
+        <div class="pros"><h4>Pour</h4><ul>
+          <li>Chaque screenshot = une action logique</li>
+          <li>Pas de redondance</li>
+          <li>Frontières d'étapes naturelles</li>
+          <li>Séquences d'événements bien délimitées</li>
+        </ul></div>
+        <div class="cons"><h4>Contre</h4><ul>
+          <li>Refactoring du captureService</li>
+          <li>Configurations des triggers à définir</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybride : événement + fallback intervalle</h3>
+      <p>Screenshot sur événement significatif <strong>ET</strong> intervalle configurable (ex. 500ms) si aucun événement. Déclenchement manuel en bonus (touche F9).</p>
+      <div class="pros-cons" style="margin-top:10px;font-size:12px">
+        <div class="pros"><h4>Pour</h4><ul>
+          <li>Flexibilité maximale</li>
+          <li>Capture les moments sans interaction</li>
+          <li>Contrôle manuel en dernier recours</li>
+        </ul></div>
+        <div class="cons"><h4>Contre</h4><ul>
+          <li>Plus complexe à implémenter</li>
+          <li>Peut générer des doublons</li>
+          <li>Déduplication nécessaire</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px">Regarde à <strong>http://localhost:51213</strong> et clique ton choix — ou réponds dans le terminal.</p>

@@ -1,0 +1,72 @@
+<h2>Modèle de données — Dual-stream décorrélé</h2>
+<p class="subtitle">Les événements et les screenshots sont deux flux indépendants. L'association se fait dans l'éditeur.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Couplage fort à la capture</h3>
+      <p>Chaque screenshot embarque directement les événements qui l'ont déclenché. L'association est figée au moment de la capture.</p>
+      <div style="background:#1e1e2e;border-radius:6px;padding:10px;margin:8px 0;font-family:monospace;font-size:10px;color:#cdd6f4">
+<pre style="margin:0;color:#cdd6f4">{
+  "id": "step-1",
+  "screenshot": "0001.png",
+  "timestamp": 1700000000000,
+  "events": [
+    { "type": "click", "x": 120, "y": 45, "t": 1700000000050 },
+    { "type": "key",   "key": "Tab",      "t": 1700000000200 }
+  ]
+}</pre>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;font-size:12px">
+        <div class="pros"><h4>Pour</h4><ul>
+          <li>Simple à produire</li>
+          <li>Pas de rebinding nécessaire</li>
+        </ul></div>
+        <div class="cons"><h4>Contre</h4><ul>
+          <li>Frontières d'étapes figées</li>
+          <li>Impossible de déplacer un événement</li>
+          <li>Changement de fenêtre = ambiguïté non résolvable</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Dual-stream décorrélé ⭐ Recommandé</h3>
+      <p>Deux fichiers séparés. Les événements <strong>référencent</strong> le screenshot courant par ID, mais l'éditeur peut rebinder librement. Sur changement d'interface, l'auteur décide où placer la frontière.</p>
+      <div style="background:#1e1e2e;border-radius:6px;padding:10px;margin:8px 0;font-family:monospace;font-size:10px;color:#cdd6f4">
+<pre style="margin:0;color:#cdd6f4"><span style="color:#a6e3a1">// screenshots.json</span>
+[{ "id":"s1", "file":"0001.png", "t":1000 },
+ { "id":"s2", "file":"0002.png", "t":2100 }]
+
+<span style="color:#cba6f7">// events.json</span>
+[{ "type":"click", "x":120,"y":45, "t":1050,
+   "step_id":"s1" },         <span style="color:#6c7086">← rebindable</span>
+ { "type":"window_change",
+   "to":"Finder", "t":2000,
+   "step_id":"s1" },         <span style="color:#6c7086">← ou s2, choix éditeur</span>
+ { "type":"key","key":"↵",  "t":2050,
+   "step_id":"s2" }]</pre>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;font-size:12px">
+        <div class="pros"><h4>Pour</h4><ul>
+          <li>Frontières d'étapes modifiables</li>
+          <li>Changement de fenêtre : ambiguïté résolvable</li>
+          <li>Ajout de screenshots sans recapturer les events</li>
+          <li>Player sait exactement quoi rejouer et dans quel ordre</li>
+        </ul></div>
+        <div class="cons"><h4>Contre</h4><ul>
+          <li>Éditeur doit exposer le rebinding</li>
+          <li>Légèrement plus complexe</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px">Regarde à <strong>http://localhost:51213</strong> et clique ton choix — ou réponds dans le terminal.</p>
