@@ -14,6 +14,7 @@ const Gallery = {
       const item = document.createElement('div');
       item.className = 'gallery-item';
       item.dataset.id = entry.id;
+      item.draggable = true;
 
       const img = document.createElement('img');
       img.src = `/data/gallery/${encodeURIComponent(entry.filename)}`;
@@ -31,6 +32,12 @@ const Gallery = {
       item.appendChild(img);
       item.appendChild(date);
       item.appendChild(btn);
+
+      item.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('captureId', entry.id);
+        e.dataTransfer.setData('captureFilename', entry.filename);
+        e.dataTransfer.effectAllowed = 'copy';
+      });
 
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
