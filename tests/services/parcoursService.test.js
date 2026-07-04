@@ -57,6 +57,32 @@ test('deleteParcours supprime le répertoire', async () => {
   await expect(fs.access(path.join(tmpDir, 'parcours', m.id))).rejects.toThrow();
 });
 
+test('getParcours retourne le manifest d\'un parcours existant', async () => {
+  const m = await svc.createParcours(tmpDir, { title: 'Get me' });
+  const fetched = await svc.getParcours(tmpDir, m.id);
+  expect(fetched.id).toBe(m.id);
+  expect(fetched.title).toBe('Get me');
+  expect(fetched.currentVersion).toBe('v1');
+});
+
+test('getVersion retourne une version spécifique', async () => {
+  const m = await svc.createParcours(tmpDir, { title: 'P' });
+  // Créer une v2
+  const vPath = path.join(tmpDir, 'parcours', m.id, 'versions', 'v1', 'version.json');
+  const v1 = JSON.parse(await fs.readFile(vPath, 'utf-8'));
+  v1.stepOrder = ['step-xyz'];
+  await fs.writeFile(vPath, JSON.stringify(v1));
+  const v2 = await svc.createVersion(tmpDir, m.id, { label: 'v2' });
+
+  // Récupérer v1 (version non-courante)
+  const fetched = await svc.getVersion(tmpDir, m.id, 'v1');
+  expect(fetched.version).toBe('v1');
+  expect(fetched.stepOrder).toEqual(['step-xyz']);
+  // v2 doit aussi être récupérable
+  const fetched2 = await svc.getVersion(tmpDir, m.id, v2.version);
+  expect(fetched2.version).toBe(v2.version);
+});
+
 test('createVersion clone la version courante et met à jour le manifest', async () => {
   const m = await svc.createParcours(tmpDir, { title: 'P' });
   const vPath = path.join(tmpDir, 'parcours', m.id, 'versions', 'v1', 'version.json');
