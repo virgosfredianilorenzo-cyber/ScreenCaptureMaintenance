@@ -19,7 +19,8 @@
   "dependencies": {
     "archiver": "^8.0.0",
     "express": "^5.2.1",
-    "screenshot-desktop": "^1.15.4"
+    "screenshot-desktop": "^1.15.4",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "jest": "^30.4.2",
