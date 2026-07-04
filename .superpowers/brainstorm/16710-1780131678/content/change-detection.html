@@ -1,0 +1,107 @@
+<h2>Détection de changement — mode maintenance</h2>
+<p class="subtitle">Comment déclencher la comparaison et ce que voit le formateur</p>
+
+<div style="display:grid;gap:14px;margin-top:4px">
+
+  <!-- Workflow -->
+  <div style="background:#181825;border-radius:8px;padding:14px">
+    <h3 style="color:#89b4fa;margin-bottom:12px">Flux de maintenance proposé</h3>
+    <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:center;gap:4px;font-size:11px;text-align:center">
+      <div style="background:#1e1e2e;border-radius:6px;padding:8px;color:#a6e3a1">
+        <div style="font-size:18px;margin-bottom:4px">🔄</div>
+        <strong>1. Re-run</strong><br>
+        <span style="color:#6c7086">Formateur refait le workflow sur le nouveau logiciel en mode "comparaison"</span>
+      </div>
+      <div style="color:#6c7086;font-size:16px">→</div>
+      <div style="background:#1e1e2e;border-radius:6px;padding:8px;color:#cba6f7">
+        <div style="font-size:18px;margin-bottom:4px">📸</div>
+        <strong>2. Capture candidate</strong><br>
+        <span style="color:#6c7086">Screenshots capturés aux mêmes déclencheurs, associés step par step</span>
+      </div>
+      <div style="color:#6c7086;font-size:16px">→</div>
+      <div style="background:#1e1e2e;border-radius:6px;padding:8px;color:#f9e2af">
+        <div style="font-size:18px;margin-bottom:4px">🔍</div>
+        <strong>3. Diff automatique</strong><br>
+        <span style="color:#6c7086">pHash + SSIM par step. Score de similarité. Seuil configurable.</span>
+      </div>
+      <div style="color:#6c7086;font-size:16px">→</div>
+      <div style="background:#1e1e2e;border-radius:6px;padding:8px;color:#89b4fa">
+        <div style="font-size:18px;margin-bottom:4px">✏️</div>
+        <strong>4. Review ciblée</strong><br>
+        <span style="color:#6c7086">Seules les étapes "changed" sont présentées. Les autres : validées automatiquement.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diff UI mockup -->
+  <div style="background:#181825;border-radius:8px;padding:14px">
+    <h3 style="color:#cba6f7;margin-bottom:10px">Interface de review (vue d'une étape)</h3>
+    <div style="background:#1e1e2e;border-radius:6px;padding:12px;font-size:12px">
+      <!-- Step header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="color:#cdd6f4;font-weight:bold">Étape 3 — Clic sur "Nouveau projet"</span>
+        <span style="background:#f38ba8;color:#1e1e2e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:bold">⚠ Changée (sim. 61%)</span>
+      </div>
+      <!-- Side-by-side -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="color:#6c7086;font-size:11px;margin-bottom:4px">AVANT (v1)</div>
+          <div style="background:#313244;border-radius:4px;height:80px;display:flex;align-items:center;justify-content:center;border:1px solid #45475a">
+            <span style="color:#6c7086;font-size:11px">[screenshot step-3-v1.png]</span>
+          </div>
+        </div>
+        <div>
+          <div style="color:#6c7086;font-size:11px;margin-bottom:4px">NOUVEAU (candidat)</div>
+          <div style="background:#313244;border-radius:4px;height:80px;display:flex;align-items:center;justify-content:center;border:1px dashed #f9e2af">
+            <span style="color:#6c7086;font-size:11px">[screenshot candidat]</span>
+          </div>
+        </div>
+      </div>
+      <!-- Event warning -->
+      <div style="margin-top:8px;background:#2a1a1a;border-radius:4px;padding:6px 8px;border-left:3px solid #f38ba8;font-size:11px;color:#f38ba8">
+        ⚠ Le clic (120, 45) se trouve dans une zone modifiée — vérifier les coordonnées
+      </div>
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button style="background:#a6e3a1;color:#1e1e2e;border:none;border-radius:4px;padding:5px 12px;font-size:11px;font-weight:bold;cursor:pointer">✓ Accepter le nouveau screenshot</button>
+        <button style="background:#cba6f7;color:#1e1e2e;border:none;border-radius:4px;padding:5px 12px;font-size:11px;font-weight:bold;cursor:pointer">↺ Re-capturer cette étape</button>
+        <button style="background:#45475a;color:#cdd6f4;border:none;border-radius:4px;padding:5px 12px;font-size:11px;cursor:pointer">✎ Éditer les events</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session overview -->
+  <div style="background:#181825;border-radius:8px;padding:14px">
+    <h3 style="color:#f9e2af;margin-bottom:10px">Vue d'ensemble de la session (après diff)</h3>
+    <div style="display:grid;gap:6px;font-size:12px;font-family:monospace">
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between">
+        <span style="color:#cdd6f4">Étape 1 — Ouvrir le logiciel</span>
+        <span style="color:#a6e3a1">✓ inchangée</span>
+      </div>
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between">
+        <span style="color:#cdd6f4">Étape 2 — Menu Fichier</span>
+        <span style="color:#a6e3a1">✓ inchangée</span>
+      </div>
+      <div style="background:#2a1a1a;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between;border-left:3px solid #f38ba8">
+        <span style="color:#cdd6f4">Étape 3 — Clic Nouveau projet</span>
+        <span style="color:#f38ba8">⚠ changée — à valider</span>
+      </div>
+      <div style="background:#1a2a1a;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between;border-left:3px solid #f9e2af">
+        <span style="color:#cdd6f4">Étape 4 — (absente dans le candidat)</span>
+        <span style="color:#f9e2af">? étape manquante ou renommée</span>
+      </div>
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between">
+        <span style="color:#cdd6f4">Étapes 5–12</span>
+        <span style="color:#a6e3a1">✓ inchangées (11/12)</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:#6c7086">
+      Résultat : 1 étape à réviser sur 12 — au lieu de tout recapturer.
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Question clé : comment déclenches-tu le "re-run" de comparaison ?<br>
+<strong>A</strong> — Le formateur refait manuellement tout le workflow<br>
+<strong>B</strong> — L'app rejoue automatiquement les événements enregistrés sur le nouveau logiciel (macro replay)</p>

@@ -1,67 +1,45 @@
-/* src/client/css/main.css */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #f0f2f5;
-  color: #1a1a2e;
-}
+body { font-family: system-ui, sans-serif; background: #f0f2f5;
+       color: #1a1a2e; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-#toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #1a1a2e;
-  color: white;
-}
+/* ── Toolbar ── */
+#toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+           background: #1a1a2e; color: white; flex-shrink: 0; }
+#toolbar h1 { font-size: 1rem; }
+#capture-status { font-size: 0.8rem; color: #86efac; }
 
-#toolbar h1 { font-size: 1rem; margin-right: auto; }
+.btn { padding: 6px 14px; border: none; border-radius: 5px;
+       cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary   { background: #4ade80; color: #1a1a2e; }
+.btn-secondary { background: #334155; color: white; }
+.btn-danger    { background: #f87171; color: white; }
+.btn-sm        { padding: 4px 10px; font-size: 0.78rem; }
 
-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
+select { padding: 5px 8px; border-radius: 5px; border: 1px solid #475569;
+         background: #1e293b; color: white; font-size: 0.85rem; }
 
-button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ── Main (gallery + editor) ── */
+#main { display: flex; flex: 1; overflow: hidden; }
 
-.btn-primary { background: #4ade80; color: #1a1a2e; }
-.btn-danger  { background: #f87171; color: white; }
-.btn-delete  { background: #e5e7eb; color: #374151; padding: 4px 8px; font-size: 0.75rem; }
+#gallery-panel { width: 160px; flex-shrink: 0; overflow-y: auto;
+                 background: #1e293b; padding: 8px; border-right: 1px solid #334155; }
+#gallery-container { display: flex; flex-direction: column; gap: 6px; }
 
-#capture-status { font-size: 0.85rem; color: #86efac; }
-
-#gallery-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 20px;
-}
-
-.gallery-item {
-  position: relative;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,.12);
-  width: 180px;
-}
-
+.gallery-item { position: relative; background: #0f172a; border-radius: 4px;
+                overflow: hidden; cursor: grab; border: 2px solid transparent; }
+.gallery-item:hover { border-color: #4ade80; }
 .gallery-item img { width: 100%; display: block; }
+.gallery-item .btn-delete { position: absolute; top: 2px; right: 2px;
+  background: rgba(0,0,0,.6); color: white; border: none; border-radius: 3px;
+  padding: 1px 5px; cursor: pointer; font-size: 0.7rem; }
 
-.gallery-date {
-  display: block;
-  font-size: 0.7rem;
-  color: #6b7280;
-  padding: 4px 8px;
-}
+#editor-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-.gallery-item .btn-delete {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
+/* ── Timeline ── */
+#timeline-panel { height: 110px; flex-shrink: 0; background: #0f172a;
+                  border-top: 1px solid #334155; display: flex; align-items: center;
+                  padding: 8px 12px; gap: 8px; overflow-x: auto; }
+#timeline-hint { color: #475569; font-size: 0.8rem; white-space: nowrap; }
+#timeline-steps { display: flex; gap: 8px; }

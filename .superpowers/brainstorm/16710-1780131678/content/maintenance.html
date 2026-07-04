@@ -1,0 +1,61 @@
+<h2>Problématique de maintenance — quand le logiciel évolue</h2>
+<p class="subtitle">Scénarios fréquents et ce que le dual-stream permet</p>
+
+<div style="display:grid;gap:14px;margin-top:4px">
+
+  <div style="background:#181825;border-radius:8px;padding:14px;border-left:3px solid #a6e3a1">
+    <h3 style="color:#a6e3a1;margin-bottom:6px">Scénario 1 — Reskin visuel (même workflow)</h3>
+    <p style="font-size:13px;color:#cdd6f4;margin-bottom:8px">Boutons redessinés, couleurs changées, logo mis à jour. Le clic est au même endroit.</p>
+    <div style="font-size:12px;background:#1e1e2e;border-radius:6px;padding:8px;font-family:monospace;color:#cdd6f4">
+      <span style="color:#6c7086">Aujourd'hui :</span> recapturer 100 % de la session<br>
+      <span style="color:#a6e3a1">Avec dual-stream :</span> <strong>recapturer uniquement les screenshots</strong> des étapes concernées — les événements ne changent pas
+    </div>
+  </div>
+
+  <div style="background:#181825;border-radius:8px;padding:14px;border-left:3px solid #cba6f7">
+    <h3 style="color:#cba6f7;margin-bottom:6px">Scénario 2 — Bouton déplacé ou renommé</h3>
+    <p style="font-size:13px;color:#cdd6f4;margin-bottom:8px">« Fichier → Nouveau projet » est maintenant dans une barre latérale à (200, 80) au lieu de (120, 45).</p>
+    <div style="font-size:12px;background:#1e1e2e;border-radius:6px;padding:8px;font-family:monospace;color:#cdd6f4">
+      <span style="color:#6c7086">Aujourd'hui :</span> recapturer tout depuis cette étape<br>
+      <span style="color:#cba6f7">Avec dual-stream :</span> <strong>éditer l'événement click</strong> (coordonnées ou séquence) + recapturer le screenshot de l'étape
+    </div>
+  </div>
+
+  <div style="background:#181825;border-radius:8px;padding:14px;border-left:3px solid #f9e2af">
+    <h3 style="color:#f9e2af;margin-bottom:6px">Scénario 3 — Étape supplémentaire ajoutée</h3>
+    <p style="font-size:13px;color:#cdd6f4;margin-bottom:8px">Une boîte de confirmation a été ajoutée entre l'étape 3 et 4.</p>
+    <div style="font-size:12px;background:#1e1e2e;border-radius:6px;padding:8px;font-family:monospace;color:#cdd6f4">
+      <span style="color:#6c7086">Aujourd'hui :</span> recapturer tout depuis cette étape<br>
+      <span style="color:#f9e2af">Avec dual-stream :</span> <strong>enregistrer une seule nouvelle étape</strong> + l'insérer entre les étapes 3 et 4
+    </div>
+  </div>
+
+  <div style="background:#181825;border-radius:8px;padding:14px;border-left:3px solid #89b4fa;margin-top:4px">
+    <h3 style="color:#89b4fa;margin-bottom:8px">⭐ Idée supplémentaire — Détection de changement</h3>
+    <p style="font-size:13px;color:#cdd6f4;margin-bottom:10px">Quand le formateur ouvre une session existante, l'app peut <strong>comparer automatiquement</strong> les screenshots actuels avec les anciens et signaler les étapes qui ont changé.</p>
+    <div style="font-size:12px;color:#bac2de;margin-bottom:8px">Flux de maintenance proposé :</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;font-family:monospace">
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;color:#a6e3a1">1. Rejouer la session sur le nouveau logiciel</div>
+      <div style="color:#6c7086;padding-top:6px">→</div>
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;color:#cba6f7">2. Diff automatique screenshot-par-screenshot</div>
+      <div style="color:#6c7086;padding-top:6px">→</div>
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;color:#f9e2af">3. Étapes "à valider" surlignées</div>
+      <div style="color:#6c7086;padding-top:6px">→</div>
+      <div style="background:#1e1e2e;border-radius:4px;padding:6px 10px;color:#89b4fa">4. Formateur valide ou re-capturé step par step</div>
+    </div>
+  </div>
+
+  <div style="background:#181825;border-radius:8px;padding:14px;border-top:2px solid #313244;margin-top:4px">
+    <h3 style="color:#cdd6f4;margin-bottom:8px">Ce que ça implique pour l'architecture</h3>
+    <ul style="font-size:13px;color:#bac2de;line-height:1.8;padding-left:16px">
+      <li>Chaque étape est un <strong>objet indépendant</strong> avec un ID stable</li>
+      <li>Screenshots versionnés par étape (<code>step-3-v1.png</code> → <code>step-3-v2.png</code>)</li>
+      <li>Re-record d'une étape = nouvelle capture qui remplace l'ancienne sans toucher les voisines</li>
+      <li>Le player utilise toujours les IDs d'étapes, jamais les noms de fichiers</li>
+      <li>Métadonnée <code>status: current | needs_review</code> sur chaque étape</li>
+    </ul>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Est-ce que la détection de changement automatique t'intéresse, ou tu vois d'autres scénarios de maintenance ?</p>

@@ -5,27 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ScreenCaptureMaintenance — Auteur</title>
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/editor.css" />
 </head>
 <body>
 
   <div id="toolbar">
-    <h1>ScreenCaptureMaintenance</h1>
-    <button id="btn-capture" class="btn-primary">● Capturer</button>
-    <button id="btn-stop" class="btn-danger" disabled>■ Stop</button>
+    <h1>SCM</h1>
+    <button id="btn-capture" class="btn btn-primary">● Capturer</button>
+    <button id="btn-stop"    class="btn btn-danger" disabled>■ Stop</button>
     <span id="capture-status"></span>
+    <div style="flex:1"></div>
+    <select id="parcours-select"><option value="">— Parcours —</option></select>
+    <button id="btn-new-parcours" class="btn btn-secondary">+ Nouveau</button>
+    <button id="btn-new-version"  class="btn btn-secondary" disabled>⎇ Version</button>
   </div>
 
-  <div id="gallery-container"></div>
+  <div id="main">
+    <div id="gallery-panel">
+      <div id="gallery-container"></div>
+    </div>
 
+    <div id="editor-panel">
+      <div id="canvas-container">
+        <canvas id="fabric-canvas"></canvas>
+        <div id="no-step-msg">← Glissez une capture sur la timeline</div>
+      </div>
+      <div id="tool-bar">
+        <button class="tool-btn active" data-tool="select">↖ Sélection</button>
+        <button class="tool-btn" data-tool="hotspot">□ Hotspot</button>
+        <button class="tool-btn" data-tool="text">T Texte</button>
+        <button id="btn-del-obj" class="btn btn-danger btn-sm">✕ Supprimer</button>
+      </div>
+      <div id="step-form" style="display:none">
+        <label>Titre <input id="f-title" type="text" placeholder="Titre de l'étape" /></label>
+        <label>Instruction <textarea id="f-instruction" rows="2"></textarea></label>
+        <label class="row">
+          <input id="f-scoring" type="checkbox" /> Scoring activé
+          <span class="indent">Points : <input id="f-points" type="number" value="1" min="0" style="width:50px" /></span>
+        </label>
+        <label class="row"><input id="f-feedback" type="checkbox" /> Feedback activé</label>
+        <div id="feedback-fields" style="display:none">
+          <label>✓ <input id="f-ok"  type="text" placeholder="Feedback correct" /></label>
+          <label>✗ <input id="f-ko"  type="text" placeholder="Feedback incorrect" /></label>
+        </div>
+        <button id="btn-save-step" class="btn btn-primary btn-sm">💾 Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="timeline-panel">
+    <div id="timeline-steps"></div>
+    <span id="timeline-hint">Glissez des captures ici pour créer des étapes</span>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/gallery.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/timeline.js"></script>
   <script src="js/toolbar.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       Gallery.init(document.getElementById('gallery-container'));
-      Toolbar.init();
+      Editor.init(document.getElementById('fabric-canvas'));
+      Timeline.init(document.getElementById('timeline-steps'));
+      Toolbar.init(document.getElementById('parcours-select'));
     });
   </script>
-
 </body>
 </html>
