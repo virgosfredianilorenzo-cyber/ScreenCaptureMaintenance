@@ -21,27 +21,74 @@ L'**apprenant** reproduit le parcours en trois modes :
 | Export SCORM 1.2 / xAPI | 🔜 Plan 4 |
 | Assistance IA (Claude API, optionnelle) | 🔜 Plan 5 |
 
+---
+
 ## Prérequis
 
-- **Node.js** v18 ou supérieur
-- **Linux** : `scrot` ou `gnome-screenshot` pour la capture desktop
-  ```bash
-  sudo apt install scrot
-  ```
-- **macOS / Windows** : aucune dépendance système supplémentaire
+### Node.js 18+
+
+Vérifie ta version :
+
+```bash
+node --version
+```
+
+> **Résultat attendu :** `v18.x.x` ou supérieur.  
+> Si Node.js n'est pas installé, télécharge-le depuis [nodejs.org](https://nodejs.org/) (choisis la version LTS).
+
+Sur Ubuntu/Debian, tu peux aussi l'installer via le terminal :
+
+```bash
+sudo apt install nodejs npm
+node --version
+```
+
+### Outil de capture (Linux uniquement)
+
+```bash
+sudo apt install scrot
+```
+
+> Sur macOS et Windows, aucune dépendance système supplémentaire n'est nécessaire.
+
+---
 
 ## Installation
 
+**1. Télécharge le projet**
+
 ```bash
 git clone https://github.com/virgosfredianilorenzo-cyber/ScreenCaptureMaintenance.git
+```
+
+> Si tu n'as pas `git` : `sudo apt install git`
+
+**2. Entre dans le dossier**
+
+```bash
 cd ScreenCaptureMaintenance
+```
+
+**3. Installe les dépendances**
+
+```bash
 npm install
+```
+
+> `npm install` lit le fichier `package.json` et télécharge toutes les bibliothèques nécessaires dans un dossier `node_modules/`. Cela peut prendre une minute.  
+> **Résultat attendu :** `added X packages` sans erreur.
+
+**4. Crée le fichier de configuration**
+
+```bash
 cp config.example.json config.json
 ```
 
-## Configuration
+> Cette commande copie le fichier d'exemple pour créer ton propre `config.json`. Ce fichier n'est pas versionné (il ne sera pas envoyé sur GitHub), ce qui te permet d'y mettre ta clé API en toute sécurité.
 
-Éditer `config.json` (non versionné) :
+**5. Édite la configuration** (optionnel)
+
+Ouvre `config.json` dans un éditeur de texte et ajuste selon tes besoins :
 
 ```json
 {
@@ -64,12 +111,24 @@ cp config.example.json config.json
 
 | Clé | Description |
 |---|---|
-| `port` | Port du serveur local |
+| `port` | Port du serveur local (défaut : 3000) |
 | `dataDir` | Répertoire de stockage des captures et parcours |
 | `capture.intervalMs` | Intervalle entre deux captures automatiques (ms) |
-| `ai.enabled` | Active l'assistance IA (nécessite une clé API Anthropic) |
-| `ai.apiKey` | Clé API Anthropic (jamais incluse dans les exports SCORM/xAPI) |
+| `ai.enabled` | Met `true` pour activer l'assistance IA |
+| `ai.apiKey` | Ta clé API Anthropic (voir ci-dessous) |
 | `export.defaultPassingScore` | Seuil de réussite par défaut à l'export (%) |
+
+### Obtenir une clé API Anthropic (optionnel)
+
+L'assistance IA est optionnelle. Si tu veux l'activer :
+
+1. Crée un compte sur [console.anthropic.com](https://console.anthropic.com)
+2. Dans le menu, va dans **API Keys** et génère une clé
+3. Colle-la dans `config.json` → `ai.apiKey` et mets `ai.enabled` à `true`
+
+> Ta clé ne sera jamais incluse dans les exports SCORM/xAPI — elle reste uniquement dans ton `config.json` local.
+
+---
 
 ## Démarrage
 
@@ -77,7 +136,18 @@ cp config.example.json config.json
 npm start
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
+Ouvre [http://localhost:3000](http://localhost:3000) dans ton navigateur.
+
+**Pour arrêter le serveur :** appuie sur `Ctrl+C` dans le terminal.
+
+**Les prochaines fois**, il suffit de faire :
+
+```bash
+cd ScreenCaptureMaintenance
+npm start
+```
+
+---
 
 ## Tests
 
@@ -86,6 +156,8 @@ npm test
 ```
 
 20 tests unitaires et d'intégration (Jest + Supertest).
+
+---
 
 ## Sécurité
 
@@ -96,6 +168,8 @@ Corrections appliquées :
 - **Path traversal** : validation que `entry.filename === <uuid>.png` avant suppression de fichier
 - **Validation d'entrée** : format UUID vérifié sur `DELETE /api/gallery/:id` (→ 400 si invalide)
 - **Dépendance morte** : paquet `uuid` supprimé (remplacé par `crypto.randomUUID`)
+
+---
 
 ## Structure du projet
 
@@ -130,6 +204,8 @@ docs/
     plans/                    ← Plans d'implémentation
 ```
 
+---
+
 ## Compatibilité
 
 | OS | Support |
@@ -137,6 +213,8 @@ docs/
 | Linux | ✅ (nécessite `scrot` ou `gnome-screenshot`) |
 | macOS | ✅ |
 | Windows | ✅ (prévu — natif via screenshot-desktop) |
+
+---
 
 ## Documentation technique
 
