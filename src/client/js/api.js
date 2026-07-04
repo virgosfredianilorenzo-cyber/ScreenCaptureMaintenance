@@ -15,7 +15,7 @@ const API = {
   async createParcours(title)    { return _post('/api/parcours', { title }); },
   async getParcours(id)          { return (await fetch(`/api/parcours/${id}`)).json(); },
   async updateParcours(id, data) { return _put(`/api/parcours/${id}`, data); },
-  async deleteParcours(id)       { await fetch(`/api/parcours/${id}`, { method: 'DELETE' }); },
+  async deleteParcours(id)       { return (await fetch(`/api/parcours/${id}`, { method: 'DELETE' })).json(); },
   async createVersion(id, label) { return _post(`/api/parcours/${id}/versions`, { label }); },
 
   // ── Steps ──
@@ -23,7 +23,7 @@ const API = {
   async addStep(id, ver, captureId, filename) { return _post(_sUrl(id, ver), { captureId, captureFilename: filename }); },
   async getStep(id, ver, stepId)              { return (await fetch(`${_sUrl(id, ver)}/${stepId}`)).json(); },
   async updateStep(id, ver, stepId, data)     { return _put(`${_sUrl(id, ver)}/${stepId}`, data); },
-  async deleteStep(id, ver, stepId)           { await fetch(`${_sUrl(id, ver)}/${stepId}`, { method: 'DELETE' }); },
+  async removeStep(id, ver, stepId)           { return (await fetch(`${_sUrl(id, ver)}/${stepId}`, { method: 'DELETE' })).json(); },
   async reorderSteps(id, ver, orderedIds)     { return _put(`${_sUrl(id, ver)}/order`, { orderedIds }); },
   async replaceScreenshot(id, ver, stepId, captureId, filename) {
     return _put(`${_sUrl(id, ver)}/${stepId}/screenshot`, { captureId, captureFilename: filename });
