@@ -24,7 +24,8 @@ async function addStep(dataDir, parcoursId, ver, { captureId, captureFilename })
   const stepId = randomUUID();
   const now    = new Date().toISOString();
 
-  const srcPng  = path.join(dataDir, 'gallery', captureFilename);
+  const safeFilename = path.basename(captureFilename || '');
+  const srcPng  = path.join(dataDir, 'gallery', safeFilename);
   const destPng = _stepPngPath(dataDir, parcoursId, ver, stepId);
   await fs.mkdir(_stepsDir(dataDir, parcoursId, ver), { recursive: true });
   await fs.copyFile(srcPng, destPng);
@@ -58,7 +59,12 @@ async function getStep(dataDir, parcoursId, ver, stepId) {
 
 async function updateStep(dataDir, parcoursId, ver, stepId, data) {
   const step = await readJson(_stepJsonPath(dataDir, parcoursId, ver, stepId));
-  Object.assign(step, data, { updatedAt: new Date().toISOString() });
+  const allowed = ['title', 'instruction', 'hotspots', 'annotations', 'fabricJson', 'scoring', 'feedback'];
+  const patch = {};
+  for (const key of allowed) {
+    if (key in data) patch[key] = data[key];
+  }
+  Object.assign(step, patch, { updatedAt: new Date().toISOString() });
   await writeJson(_stepJsonPath(dataDir, parcoursId, ver, stepId), step);
   return step;
 }
@@ -73,15 +79,23 @@ async function removeStep(dataDir, parcoursId, ver, stepId) {
 
 async function reorderSteps(dataDir, parcoursId, ver, orderedIds) {
   const version = await readJson(_verPath(dataDir, parcoursId, ver));
-  version.stepOrder = orderedIds;
+  const current = new Set(version.stepOrder);
+  version.stepOrder = orderedIds.filter(id => current.has(id));
   await writeJson(_verPath(dataDir, parcoursId, ver), version);
+  return version.stepOrder;
 }
 
 async function replaceScreenshot(dataDir, parcoursId, ver, stepId, { captureId, captureFilename }) {
-  const srcPng  = path.join(dataDir, 'gallery', captureFilename);
+  const safeFilename = path.basename(captureFilename || '');
+  const srcPng  = path.join(dataDir, 'gallery', safeFilename);
   const destPng = _stepPngPath(dataDir, parcoursId, ver, stepId);
   await fs.copyFile(srcPng, destPng);
-  return updateStep(dataDir, parcoursId, ver, stepId, { sourceCaptureId: captureId, fabricJson: null });
+  // Bypass the client-facing whitelist: this is an internal operation that
+  // legitimately needs to update sourceCaptureId and reset fabricJson.
+  const step = await readJson(_stepJsonPath(dataDir, parcoursId, ver, stepId));
+  Object.assign(step, { sourceCaptureId: captureId, fabricJson: null, updatedAt: new Date().toISOString() });
+  await writeJson(_stepJsonPath(dataDir, parcoursId, ver, stepId), step);
+  return step;
 }
 
 module.exports = { addStep, listSteps, getStep, updateStep, removeStep, reorderSteps, replaceScreenshot };

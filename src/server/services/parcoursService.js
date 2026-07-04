@@ -64,7 +64,8 @@ async function createVersion(dataDir, id, { label }) {
   const fromVer  = manifest.currentVersion;
   const fromData = await readJson(_versionPath(dataDir, id, fromVer));
 
-  const nextNum = manifest.versions.length + 1;
+  const nums = manifest.versions.map(v => parseInt(v.slice(1), 10)).filter(n => !isNaN(n));
+  const nextNum = nums.length > 0 ? Math.max(...nums) + 1 : 1;
   const newVer  = `v${nextNum}`;
   const now     = new Date().toISOString();
 

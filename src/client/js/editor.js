@@ -114,17 +114,15 @@ const Editor = {
       this._canvas.setHeight(cH);
       this._canvas.clear();
 
-      this._canvas.setBackgroundImage(img, this._canvas.renderAll.bind(this._canvas), {
-        scaleX: scale, scaleY: scale,
-      });
-
-      if (step.fabricJson) {
-        this._canvas.loadFromJSON(step.fabricJson, () => {
+      this._canvas.setBackgroundImage(img, () => {
+        if (step.fabricJson) {
+          this._canvas.loadFromJSON(step.fabricJson, () => {
+            this._canvas.renderAll();
+          });
+        } else {
           this._canvas.renderAll();
-        });
-      } else {
-        this._canvas.renderAll();
-      }
+        }
+      }, { scaleX: scale, scaleY: scale });
     });
   },
 

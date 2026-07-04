@@ -47,6 +47,8 @@ const Toolbar = {
     await API.createVersion(this._parcoursId, label);
     const manifest = await API.getParcours(this._parcoursId);
     this._ver = manifest.currentVersion;
+    await this._loadParcours();
+    this.select.value = this._parcoursId;
     alert(`Version ${manifest.currentVersion} créée.`);
     await Timeline.load(this._parcoursId, this._ver);
   },
@@ -70,12 +72,15 @@ const Toolbar = {
   },
 
   async _stopCapture() {
-    await API.stopCapture();
-    this.btnCapture.disabled = false;
-    this.btnStop.disabled = true;
-    this.statusEl.textContent = '';
-    clearInterval(this._pollInterval);
-    await Gallery.refresh();
+    try {
+      await API.stopCapture();
+    } finally {
+      this.btnCapture.disabled = false;
+      this.btnStop.disabled = true;
+      this.statusEl.textContent = '';
+      clearInterval(this._pollInterval);
+      await Gallery.refresh();
+    }
   },
 
   async _syncCaptureStatus() {
